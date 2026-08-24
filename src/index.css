@@ -1,0 +1,29 @@
+@import 'tailwindcss';
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+  /* Kiosk hardening: this is a touchscreen event app, not a document —
+     don't let visitors select text, drag images, or pull-to-refresh. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+body {
+  overflow: hidden;
+}

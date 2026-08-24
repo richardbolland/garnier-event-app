@@ -1,0 +1,11 @@
+question,category,active
+"I'm outside all day and need my skin to stay fresh.",HYDRATION,TRUE
+"My schedule is full, I need skincare that works fast.",QUICK_ABSORB,TRUE
+"I want a clean, balanced look without midday shine.",OIL_CONTROL,TRUE
+"I want my skin to look smoother and more refined.",PORE_REDUCING,TRUE
+"I need something light and cooling before I head out.",LIGHTWEIGHT,TRUE
+"Going for a long hike today?",HYDRATION,TRUE
+"Back-to-back meetings all morning?",QUICK_ABSORB,TRUE
+"Taking selfies in the afternoon sun?",OIL_CONTROL,TRUE
+"Prepping for a close-up photo shoot?",PORE_REDUCING,TRUE
+"Hitting the gym for a quick workout?",LIGHTWEIGHT,TRUE
