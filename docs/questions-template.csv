@@ -9,3 +9,6 @@ question,category,active
 "Taking selfies in the afternoon sun?",OIL_CONTROL,TRUE
 "Prepping for a close-up photo shoot?",PORE_REDUCING,TRUE
 "Hitting the gym for a quick workout?",LIGHTWEIGHT,TRUE
+"Do you work late most nights?",SOFTLIFE,TRUE
+"Do you check emails first thing when you wake up?",SOFTLIFE,TRUE
+"Is your schedule packed with zero downtime?",SOFTLIFE,TRUE

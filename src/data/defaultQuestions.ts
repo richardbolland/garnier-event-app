@@ -69,4 +69,13 @@ export const DEFAULT_QUESTIONS: Question[] = [
   { id: 'd48', text: 'Want to ditch the setting powder?', category: 'OIL_CONTROL' },
   { id: 'd49', text: 'Looking for a flawless finish?', category: 'PORE_REDUCING' },
   { id: 'd50', text: 'Prefer gel textures over creams?', category: 'LIGHTWEIGHT' },
+
+  // SOFTLIFE questions sit above the product logic — see the SOFTLIFE note
+  // in src/types.ts. They're deliberately phrased so a "soft life" person
+  // swipes NO (left) on every one of them.
+  { id: 'd51', text: 'Do you work late most nights?', category: 'SOFTLIFE' },
+  { id: 'd52', text: "Do you check emails first thing when you wake up?", category: 'SOFTLIFE' },
+  { id: 'd53', text: 'Is your schedule packed with zero downtime?', category: 'SOFTLIFE' },
+  { id: 'd54', text: 'Do you often skip meals when things get busy?', category: 'SOFTLIFE' },
+  { id: 'd55', text: 'Do you feel guilty taking a proper break?', category: 'SOFTLIFE' },
 ]

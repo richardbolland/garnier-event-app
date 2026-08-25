@@ -25,7 +25,7 @@ or redeploy.
 4. Fill in rows below the header:
    - **question** — the exact text shown on the card, e.g. `Going for a long hike today?`
    - **category** — must be exactly one of:
-     `HYDRATION`, `QUICK_ABSORB`, `OIL_CONTROL`, `PORE_REDUCING`, `LIGHTWEIGHT`
+     `HYDRATION`, `QUICK_ABSORB`, `OIL_CONTROL`, `PORE_REDUCING`, `LIGHTWEIGHT`, `SOFTLIFE`
      (all caps, underscore not space). Any other value, or a blank
      category, causes that row to be skipped.
    - **active** — `TRUE` to include the question, `FALSE` to hide it
@@ -33,6 +33,25 @@ or redeploy.
 
 You can have as many rows as you like — the app shuffles them into a
 random order every time someone plays.
+
+### The SOFTLIFE category
+
+`SOFTLIFE` questions work differently from the 5 product categories, and
+are never used to pick the recommended product — they sit above the
+product logic and produce a separate "Soft Life" verdict shown alongside
+the result.
+
+**Write every SOFTLIFE question so a genuinely "soft life" person would
+answer NO** — e.g. `Do you work late most nights?`, `Do you check emails
+first thing when you wake up?`. If someone swipes NO (left) on every
+SOFTLIFE question they saw, the app shows "You're Living the Soft Life."
+Swipe YEAH (right) on even one, and it shows the softer "Soft Life... in
+Progress" instead. If no SOFTLIFE question happens to come up in a given
+round (the deck is shuffled and rounds are short), the badge is simply
+skipped for that play rather than showing a misleading result.
+
+Mix in as many or as few SOFTLIFE rows as you like alongside the product
+questions — they shuffle into the same deck.
 
 ## 2. Publish the sheet as CSV
 

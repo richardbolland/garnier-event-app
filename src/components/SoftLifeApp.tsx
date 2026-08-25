@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, CheckCircle, Clock, Flame, Play, RefreshCw, WifiOff, XCircle } from 'lucide-react'
-import type { Category, CategoryTally, Question } from '../types'
-import { CATEGORIES, emptyTally } from '../types'
+import type { CategoryTally, ProductCategory, Question } from '../types'
+import { PRODUCT_CATEGORIES, emptyTally } from '../types'
 import { PRODUCTS } from '../data/products'
 import { loadQuestions, shuffle, type QuestionSourceResult } from '../lib/questionSource'
 import BrandLogo from './BrandLogo'
@@ -21,7 +21,7 @@ const PLAYING_INACTIVITY_TIMEOUT_MS = 15000
 const RESULTS_INACTIVITY_TIMEOUT_MS = 45000
 const COMBO_DISPLAY_THRESHOLD = 3
 
-const CATEGORY_LABELS: Record<Category, string> = {
+const CATEGORY_LABELS: Record<ProductCategory, string> = {
   HYDRATION: 'Hydration',
   QUICK_ABSORB: 'Fast Absorb',
   OIL_CONTROL: 'Oil Control',
@@ -37,6 +37,11 @@ export default function SoftLifeApp() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [timeLeft, setTimeLeft] = useState(ROUND_SECONDS)
   const [answers, setAnswers] = useState<CategoryTally>(emptyTally())
+  // How many SOFTLIFE-tagged questions were swiped at all this round
+  // (either direction) — used to know whether we saw enough of them to
+  // render a verdict, since the shuffled deck might not surface any in a
+  // short round.
+  const [softLifeSeen, setSoftLifeSeen] = useState(0)
   const [dragCurrentX, setDragCurrentX] = useState(0)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [combo, setCombo] = useState<{ direction: 'left' | 'right'; count: number; key: number }>({
@@ -105,6 +110,7 @@ export default function SoftLifeApp() {
     setCurrentIndex(0)
     setTimeLeft(ROUND_SECONDS)
     setAnswers(emptyTally())
+    setSoftLifeSeen(0)
     setDragCurrentX(0)
     setCombo({ direction: 'right', count: 0, key: 0 })
     setGameState('playing')
@@ -117,6 +123,10 @@ export default function SoftLifeApp() {
 
     if (direction === 'right') {
       setAnswers((prev) => ({ ...prev, [currentQuestion.category]: prev[currentQuestion.category] + 1 }))
+    }
+
+    if (currentQuestion.category === 'SOFTLIFE') {
+      setSoftLifeSeen((prev) => prev + 1)
     }
 
     setCombo((prev) => {
@@ -138,9 +148,12 @@ export default function SoftLifeApp() {
   }
 
   const getRecommendation = () => {
-    let topCategory: Category = 'HYDRATION'
+    // SOFTLIFE deliberately excluded — it's a separate verdict layered on
+    // top of the result, not a product-matching signal.
+    let topCategory: (typeof PRODUCT_CATEGORIES)[number] = 'HYDRATION'
     let maxCount = -1
-    ;(Object.entries(answers) as [Category, number][]).forEach(([category, count]) => {
+    PRODUCT_CATEGORIES.forEach((category) => {
+      const count = answers[category]
       if (count > maxCount) {
         maxCount = count
         topCategory = category
@@ -208,7 +221,12 @@ export default function SoftLifeApp() {
           )}
 
           {gameState === 'results' && recommendation && (
-            <ResultsScreen product={recommendation} answers={answers} onRestart={() => setGameState('menu')} />
+            <ResultsScreen
+              product={recommendation}
+              answers={answers}
+              softLifeSeen={softLifeSeen}
+              onRestart={() => setGameState('menu')}
+            />
           )}
 
           {showCombo && gameState === 'playing' && (
@@ -391,13 +409,21 @@ function PlayingScreen({
 function ResultsScreen({
   product,
   answers,
+  softLifeSeen,
   onRestart,
 }: {
   product: (typeof PRODUCTS)[keyof typeof PRODUCTS]
   answers: CategoryTally
+  softLifeSeen: number
   onRestart: () => void
 }) {
-  const maxCount = Math.max(1, ...Object.values(answers))
+  const maxCount = Math.max(1, ...PRODUCT_CATEGORIES.map((c) => answers[c]))
+  // A "soft life" verdict only renders if at least one SOFTLIFE question
+  // actually came up this round (the shuffled deck might not surface one
+  // in a short round) — and requires a clean sweep of NOs, since these
+  // questions are written so a soft-life person answers NO to all of them.
+  const softLifeDetermined = softLifeSeen > 0
+  const isSoftLife = softLifeDetermined && answers.SOFTLIFE === 0
 
   return (
     <div className="fade-in relative flex h-full w-full flex-col items-center justify-center">
@@ -409,6 +435,17 @@ function ResultsScreen({
         </span>
         <h2 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">Your Soft Life Match</h2>
       </div>
+
+      {softLifeDetermined && (
+        <div
+          className={`result-pop mb-4 flex items-center gap-2 rounded-full px-5 py-2.5 text-base font-bold sm:mb-5 sm:text-lg ${
+            isSoftLife ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-900 text-[#FFDF2D]'
+          }`}
+        >
+          <span className="text-xl sm:text-2xl">{isSoftLife ? '✨' : '☁️'}</span>
+          <span>{isSoftLife ? "You're Living the Soft Life" : 'Soft Life... in Progress'}</span>
+        </div>
+      )}
 
       <div className="result-pop relative flex w-full max-w-2xl flex-col items-center overflow-hidden rounded-3xl border border-gray-100 bg-white p-5 text-center shadow-2xl sm:flex-row sm:space-x-8 sm:p-6 sm:text-left">
         <div className="pointer-events-none absolute top-0 right-0 -z-0 h-full w-1/2 bg-gradient-to-l from-yellow-50 to-white" />
@@ -433,7 +470,7 @@ function ResultsScreen({
           Your mood breakdown
         </p>
         <div className="space-y-1.5 sm:space-y-2">
-          {CATEGORIES.map((category) => {
+          {PRODUCT_CATEGORIES.map((category) => {
             const count = answers[category]
             const pct = Math.round((count / maxCount) * 100)
             const isWinner = category === product.category

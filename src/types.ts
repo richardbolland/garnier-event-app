@@ -1,4 +1,5 @@
-export const CATEGORIES = [
+// The 5 categories that drive product recommendations.
+export const PRODUCT_CATEGORIES = [
   'HYDRATION',
   'QUICK_ABSORB',
   'OIL_CONTROL',
@@ -6,6 +7,18 @@ export const CATEGORIES = [
   'LIGHTWEIGHT',
 ] as const
 
+export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number]
+
+// SOFTLIFE questions sit *above* the product logic, not inside it: they're
+// intentionally phrased so a "soft life" person answers NO to all of them
+// (e.g. "Do you work late?"). It's tracked as a separate yes/no verdict —
+// swipe YEAH on any one of them and you're not (yet) living the soft life
+// — shown alongside the product match but never counted toward it.
+export const SPECIAL_CATEGORIES = ['SOFTLIFE'] as const
+export type SpecialCategory = (typeof SPECIAL_CATEGORIES)[number]
+
+// All valid category values a question in the Sheet/bundled deck can carry.
+export const CATEGORIES = [...PRODUCT_CATEGORIES, ...SPECIAL_CATEGORIES] as const
 export type Category = (typeof CATEGORIES)[number]
 
 export interface Question {
@@ -15,7 +28,7 @@ export interface Question {
 }
 
 export interface Product {
-  category: Category
+  category: ProductCategory
   name: string
   benefit: string
   description: string
@@ -32,5 +45,6 @@ export function emptyTally(): CategoryTally {
     OIL_CONTROL: 0,
     PORE_REDUCING: 0,
     LIGHTWEIGHT: 0,
+    SOFTLIFE: 0,
   }
 }
